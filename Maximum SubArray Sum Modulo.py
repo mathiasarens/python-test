@@ -1,5 +1,7 @@
 import bisect
 
+## https://www.quora.com/What-is-the-logic-used-in-the-HackerRank-Maximise-Sum-problem
+
 def maximumSum(a, m):
     max_modulo = 0
     prefix = []

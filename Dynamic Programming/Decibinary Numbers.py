@@ -4,9 +4,11 @@ def decibinaryNumbers(x):
     result = []
     i = 0
     while len(result) < x:
-        result.extend(array_of_decibinary_numbers_for_x_decimal(i))
+        result.extend(map(lambda x: (x, i),array_of_decibinary_numbers_for_x_decimal(i)))
         i+=1
-    return result[x-1]
+    # for index, tuple in enumerate(result):
+    #     print(f"{index+1}: {tuple[0]} {tuple[1]}")
+    return result[x-1][0]
 
 def array_of_decibinary_numbers_for_x_decimal(x):
     if x == 0:
@@ -18,8 +20,11 @@ def array_of_decibinary_numbers_for_x_decimal(x):
 def array_of_decibinary_numbers_for_x_decimal_and_max_exponent(x, exponent):
     if exponent < 0 or x <= 0:
         return []
-    if exponent == 0 and 0 <= x <= 9:
-        return [str(x)]
+    if exponent == 0:
+        if 0 <= x <= 9:
+            return [str(x)]
+        else: 
+            return []
     result = []
     for j in range(math.ceil(x/2**exponent)+1,0,-1):
         rest = x - (j * 2**exponent) 
@@ -36,6 +41,7 @@ def array_of_decibinary_numbers_for_x_decimal_and_max_exponent(x, exponent):
 
 # print(array_of_decibinary_numbers_for_x_decimal(8))
 # print(array_of_decibinary_numbers_for_x_decimal(5))
+# print(array_of_decibinary_numbers_for_x_decimal(10))
 
 def testcase(i):
     print(f"TestCase{i}")
@@ -47,29 +53,34 @@ def testcase(i):
 
         result = decibinaryNumbers(x)
         expected_result = int(fptr_solution.readline())
-        print(result == expected_result)
+        if result != expected_result:
+            print(f"testcase: {x}: expected: {expected_result} but got: {result}")
+            break
         
     fptr_solution.close()
     fptr_input.close()
+    print("All tests ok")
     print("")
 
 # print(math.log2(32))
 # print(math.log2(5))
 # print(math.log2(8))
 # print(math.floor(math.log2(8)))
-# print(decibinaryNumbers(10))
+# print(decibinaryNumbers(49))
+# print(decibinaryNumbers(49) == 34)
 
-testcase(0)
-testcase(1)
-testcase(2)
+# testcase(0)
+# testcase(1)
+# testcase(2)
+testcase(3)
 
 def decibinaryNumbersVerySlow(x):
     decibinary_numbers_with_decimal = []
     for i in range(10**math.ceil(math.log2(x))):
         decibinary_numbers_with_decimal.append(calculate_decimal_from_deci_binary(i))
     decibinary_numbers_with_decimal.sort(key = lambda x: x[1])
-    for tuple in decibinary_numbers_with_decimal:
-        print(f"{tuple[0]} {tuple[1]}")
+    for index, tuple in enumerate(decibinary_numbers_with_decimal):
+        print(f"{index+1}: {tuple[0]} {tuple[1]}")
     return decibinary_numbers_with_decimal[x-1][0]
 
 def calculate_decimal_from_deci_binary(decibinary):
@@ -79,4 +90,6 @@ def calculate_decimal_from_deci_binary(decibinary):
     for i in range(length):
         decimal_result += int(decibinary_str[i])*2**(length-1-i)
     return (decibinary,decimal_result)
+
+# decibinaryNumbersVerySlow(10)
 

@@ -1,20 +1,24 @@
 import math
+
+decibinary_values_for_dec = {}
+decibinary_values_for_dec[0] = [0]
+decibinary_values_for_dec[1] = [1]
+
+sorted_decibinary_values = [] 
+sorted_decibinary_values_last_dec = 0
+
 # Complete the decibinaryNumbers function below.
 def decibinaryNumbers(x):
+    global decibinary_values_for_dec, sorted_decibinary_values, sorted_decibinary_values_last_dec
     if x < 1:
         return -1
-    dp = {}
-    dp[0] = [0]
-    dp[1] = [1]
 
-    result = [] 
-    i = 0
-    while len(result) <= x:
-        result.extend(map(lambda x: (x, i),calculcate_decibinary_numbers_for_dp(dp,i)))
-        i+=1
-    # for index, tuple in enumerate(result):
+    while len(sorted_decibinary_values) <= x:
+        sorted_decibinary_values.extend(map(lambda x: (x, sorted_decibinary_values_last_dec),calculcate_decibinary_numbers_for_dp(decibinary_values_for_dec,sorted_decibinary_values_last_dec)))
+        sorted_decibinary_values_last_dec+=1
+    # for index, tuple in enumerate(sorted_decibinary_values):
     #     print(f"{index+1}: {tuple[0]} {tuple[1]}")
-    return result[x-1][0]
+    return sorted_decibinary_values[x-1][0]
 
 def calculcate_decibinary_numbers_for_dp(dp, num_dec):
         result = []
@@ -129,7 +133,8 @@ def testcase(i):
 # testcase(0)
 # testcase(1)
 # testcase(2)
-testcase(3)
+# testcase(3)
+testcase(4)
 
 # Solution 2 still to slow
 
@@ -174,9 +179,9 @@ def array_of_decibinary_numbers_for_x_decimal_and_max_exponent(x, exponent):
 
 # decibinaryNumbersTooSlow(42)
 
-# for i in range(11): 
+# for i in range(21): 
 #     print(f"{i}: {array_of_decibinary_numbers_for_x_decimal(i)}")
-# for i in range(11):
+# for i in range(100):
 #     print(f"{i}: {len(array_of_decibinary_numbers_for_x_decimal(i))}")
 
 # print(f"{3}: {array_of_decibinary_numbers_for_x_decimal(3)}")

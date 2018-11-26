@@ -1,106 +1,59 @@
+# Solution from https://github.com/charles-wangkai/hackerrank/blob/master/decibinary-numbers/Solution.java
 import math
+import bisect
 
-decibinary_values_for_dec = {}
-decibinary_values_for_dec[0] = [0]
-decibinary_values_for_dec[1] = [1]
+class Solution:
+    LIMIT_EXPONENT=19
+    LIMIT_DECIMAL_NUMBERS=30000
 
-sorted_decibinary_values = [] 
-sorted_decibinary_values_last_dec = 0
+    def __init__(self):
+        self.count_decibinary_number_per_exponent = [[0 for i in range(self.LIMIT_DECIMAL_NUMBERS+1)] for i in range(self.LIMIT_EXPONENT+1)]
+        self.sum_count_decibinary_numbers = [0 for i in range(self.LIMIT_DECIMAL_NUMBERS+1)]
+        self.calculate_count_decibinary_numbers()
+        self.calculate_sum_count_decibinary_numbers()
 
-# Complete the decibinaryNumbers function below.
-def decibinaryNumbers(x):
-    global decibinary_values_for_dec, sorted_decibinary_values, sorted_decibinary_values_last_dec
-    if x < 1:
-        return -1
+    def calculate_count_decibinary_numbers(self):
+        self.count_decibinary_number_per_exponent[0][0]=1
+        for e in range(1,self.LIMIT_EXPONENT+1):
+            for s in range(self.LIMIT_DECIMAL_NUMBERS+1):
+                for i in range(0,10):
+                    nextS = s - i * (2**(e-1))
+                    if nextS >= 0:
+                        self.count_decibinary_number_per_exponent[e][s]+=self.count_decibinary_number_per_exponent[e-1][nextS]    
 
-    while len(sorted_decibinary_values) <= x:
-        sorted_decibinary_values.extend(map(lambda x: (x, sorted_decibinary_values_last_dec),calculcate_decibinary_numbers_for_dp(decibinary_values_for_dec,sorted_decibinary_values_last_dec)))
-        sorted_decibinary_values_last_dec+=1
-    # for index, tuple in enumerate(sorted_decibinary_values):
-    #     print(f"{index+1}: {tuple[0]} {tuple[1]}")
-    return sorted_decibinary_values[x-1][0]
+    def calculate_sum_count_decibinary_numbers(self):
+        curr = 0
+        for i in range(self.LIMIT_DECIMAL_NUMBERS+1):
+            curr += self.count_decibinary_number_per_exponent[self.LIMIT_EXPONENT][i]
+            self.sum_count_decibinary_numbers[i] = curr
 
-def calculcate_decibinary_numbers_for_dp(dp, num_dec):
-        result = []
-        last_number = 0
-        if num_dec > 1:
-            for prev in dp[num_dec-1]:
-                new_number_str = increment_decibinary(str(prev))
-                new_number = int(new_number_str)
-                if new_number > last_number:
-                    result.append(int(new_number_str))
-                    last_number = new_number
-                if new_number_str[-1] == '2':
-                    result.append(int(add_decibinary_for_new_zero(new_number_str)))
-                if num_dec/2**math.floor(math.log2(num_dec)) == 1.0:
-                    result.extend(add_top_numbers(result[-1]))
-            dp[num_dec] = result
+    # Complete the decibinaryNumbers function below.
+    def decibinaryNumbers(self, x):
+        decimal_number = bisect.bisect_left(self.sum_count_decibinary_numbers, x)
+        if decimal_number == 0:
+            index1_of_decibinary_number_at_decimal = x
         else:
-            result = dp[num_dec]
-        return result
-            
-
-def add_top_numbers(last_number):
-    result = []
-    last_number_str = str(last_number)
-    for i in range(len(last_number_str)-1, -1, -1):
-        if last_number_str[i] == '2':
-            if i > 0:
-                new_number = int(last_number_str[:i-1] + str(int(last_number_str[i-1])+1) + ''.join(['0' for i in range(len(last_number_str)-i)]))
-                result.append(new_number)
-                result.extend(add_top_numbers(new_number))
-            else:
-                result.append(int('1' + ''.join(['0' for i in range(len(last_number_str)-i)])))
-        elif last_number_str[i] != '0':
-            break
-    return result
-            
-def add_decibinary_for_new_zero(decibinary_str):
-        return increment_decibinary(decibinary_str[:-1]) + '0'
-
-def increment_decibinary(decibinary_str):
-    result = []
-    pos_smaller_9 = len(decibinary_str)-1
-    while pos_smaller_9 >=0:
-        number = int(decibinary_str[pos_smaller_9])
-        if number < 9:
-            break
-        pos_smaller_9-=1
-    for i in range(pos_smaller_9):
-        result.append(decibinary_str[i])
-    largest_exponent = len(decibinary_str)-pos_smaller_9-1
-    if pos_smaller_9 <0:
-        result.append(str(1))
-    else:
-        result.append(str(int(decibinary_str[pos_smaller_9])+1))
-    rest = (2**largest_exponent-1)*9+1-(2**(largest_exponent))
-    for i in range(pos_smaller_9+1,len(decibinary_str)):
-        largest_exponent-=1
-        times = rest // (2**largest_exponent)
-        new_number_at_pos = min(9,times)
-        result.append(str(new_number_at_pos))
-        rest -= new_number_at_pos*(2**largest_exponent)
-        
-    return ''.join(result)
-
-# print(increment_decibinary(8)=='9')
-# print(increment_decibinary(9)=='18')
-# print(increment_decibinary(10)=='11')
-# print(increment_decibinary(19)=='28')
-# print(increment_decibinary(29)=='38')
-# print(increment_decibinary(89)=='98')
-# print(increment_decibinary(99)=='196')
-# print(increment_decibinary(199)=='296')
-# print(increment_decibinary(999)=='1992') # 999 = 36+18+9=63; 8 + 36 + 18 + 2= 64
-# print(increment_decibinary(1999)=='2992') # 1999 = 36+18+9=63; 8 + 36 + 18 + 2= 64
-# print(increment_decibinary(9999)=='19960') # 9999 = 72+36+18+9=135; 16 + 72 + 36 + 12 + 0= 136
-# print(increment_decibinary(119)=='128') # 129 = 15 128 = 16
+            index1_of_decibinary_number_at_decimal = x - self.sum_count_decibinary_numbers[decimal_number-1]
+        result = []
+        for exponent in range(self.LIMIT_EXPONENT,0,-1):
+            prev_index = -1
+            index = 0
+            digit = -1
+            while index < index1_of_decibinary_number_at_decimal:
+                digit +=1
+                prev_index = index
+                index += self.count_decibinary_number_per_exponent[exponent-1][decimal_number-digit*(2**(exponent-1))]
+            result.append(digit)
+            decimal_number-=digit*(2**(exponent-1))
+            index1_of_decibinary_number_at_decimal-=prev_index
+        return int(''.join(map(lambda x: str(x),result)))
 
 
+# solution = Solution()
+# print(solution.decibinaryNumbers(32))
 
-        
-
-# print(array_of_decibinary_numbers_for_x_decimal(8))
+# for i in range(1,21):
+#     print(f"{i}: {calculate_count_decibinary_numbers_recursive(i)}")
 # print(array_of_decibinary_numbers_for_x_decimal(5))
 # print(array_of_decibinary_numbers_for_x_decimal(10))
 
@@ -108,11 +61,12 @@ def testcase(i):
     print(f"TestCase{i}")
     fptr_input = open(f"Dynamic Programming/Decibinary Numbers-TestCase{i}.txt", 'r')
     fptr_solution = open(f"Dynamic Programming/Decibinary Numbers-Solution{i}.txt", 'r')
+    solution = Solution()
     q = int(fptr_input.readline())
     for q_itr in range(q):
         x = int(fptr_input.readline())
 
-        result = decibinaryNumbers(x)
+        result = solution.decibinaryNumbers(x)
         expected_result = int(fptr_solution.readline())
         if result != expected_result:
             print(f"testcase: {x}: expected: {expected_result} but got: {result}")
@@ -130,11 +84,28 @@ def testcase(i):
 # print(decibinaryNumbers(42))
 # print(decibinaryNumbers(49) == 34)
 
-# testcase(0)
-# testcase(1)
-# testcase(2)
-# testcase(3)
+testcase(0)
+testcase(1)
+testcase(2)
+testcase(3)
 testcase(4)
+
+def calculate_count_decibinary_numbers_recursive(x):
+    return calculate_count_decibinary_numbers_recursive_inner(x, math.floor(math.log2(x)))
+
+def calculate_count_decibinary_numbers_recursive_inner(x, e):
+    if e < 0:
+        if x == 0:
+            return 1
+        else: 
+            return 0
+    result = 0
+    for i in range(0,10):
+        rest = x - i * (2**e)
+        if rest >= 0:
+            result += calculate_count_decibinary_numbers_recursive_inner(rest, e-1)
+    return result
+
 
 # Solution 2 still to slow
 
@@ -184,7 +155,9 @@ def array_of_decibinary_numbers_for_x_decimal_and_max_exponent(x, exponent):
 # for i in range(100):
 #     print(f"{i}: {len(array_of_decibinary_numbers_for_x_decimal(i))}")
 
+
 # print(f"{3}: {array_of_decibinary_numbers_for_x_decimal(3)}")
+# print(f"{8}: {array_of_decibinary_numbers_for_x_decimal(8)}")
 # print(f"{20}: {array_of_decibinary_numbers_for_x_decimal(20)}")
 # print(f"{27}: {array_of_decibinary_numbers_for_x_decimal(27)}")
 # print(f"{28}: {array_of_decibinary_numbers_for_x_decimal(28)}")

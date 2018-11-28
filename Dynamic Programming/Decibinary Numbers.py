@@ -188,4 +188,3 @@ def calculate_decimal_from_deci_binary(decibinary):
     return (decibinary,decimal_result)
 
 # decibinaryNumbersVerySlow(42)
-

@@ -1,48 +1,34 @@
 # Solution is wrong
 # https://www.hackerrank.com/challenges/poisonous-plants/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=stacks-queues&h_r=next-challenge&h_v=zen
 def poisonousPlants(p):
-    global_min_value = p[0]
-    max_day_count = 0
-    current_day_counter = 0
-    above_global_minimum = False
-    last_minimum = -1
-    last_minimum_counter = -1
+    killer_index_array = [None] * len(p)
+    min_index_stack = []
+    killer_index_array[0]= -1
+    min_index_stack.append(0)
+    max_days_array = [0] * len(p)
+    max_days = 0
     for i in range(1,len(p)):
-        if p[i-1] < p[i]:
-            above_global_minimum = True
-            current_day_counter=1
-            max_day_count = max(max_day_count, current_day_counter)
-        elif above_global_minimum and p[i-1] >= p[i] and p[i] > global_min_value:
-            if p[i] > last_minimum:
-                current_day_counter+=1
-            if p[i] <= last_minimum:
-                last_minimum_counter+=1
-                current_day_counter=last_minimum_counter
-            max_day_count = max(max_day_count, current_day_counter)
-            last_minimum = p[i]
-            last_minimum_counter = current_day_counter
-        elif above_global_minimum and p[i-1] >= p[i] and p[i] < global_min_value:
-            above_global_minimum = False
-            global_min_value = p[i]
-            max_day_count = max(max_day_count, current_day_counter)
-            last_minimum = p[i]
-            last_minimum_counter = -1
-        elif above_global_minimum and p[i-1] >= p[i] and p[i] == global_min_value:
-            above_global_minimum = False
-            current_day_counter = 0
-        elif p[i] < global_min_value:
-            global_min_value = p[i]
-            last_minimum = p[i]
-    max_day_count = max(max_day_count, current_day_counter)
-    return max_day_count
+        if p[min_index_stack[0]] < p[i]:
+            killer_index_array[i] = min_index_stack[0]
+            max_days_array[killer_index_array[i]] += 1
+            max_days = max(max_days, max_days_array[killer_index_array[i]])
+        else:
+            while len(min_index_stack)>1 and p[min_index_stack[0]] >= p[i]:
+                min_index_stack.pop(0)
+            if p[min_index_stack[0]] < p[i]:
+                killer_index_array[i] = min_index_stack[0]
+                max_days_array[killer_index_array[i]] += 1
+                max_days = max(max_days, max_days_array[killer_index_array[i]])
+            else:
+                killer_index_array[i] = -1
+        min_index_stack.insert(0,i)
 
-# 20 5 2 2 2 5 5 9 12 5
-# 20 5 2 2 2 5 5
-# 20 5 2 2 2 5
-# 20 5 2 2 2 
-print(poisonousPlants([20,5,6,15,2,2,17,2,11,5,14,5,10,9,19,12,5])==4)
-print(poisonousPlants([4,5,3,2,1,6])==1)
+    return max_days
+
 print(poisonousPlants([4,3,7,5,6,4,2])==3)
+print(poisonousPlants([4,5,3,2,1,6])==1)
+print(poisonousPlants([20,5,6,15,2,2,17,2,11,5,14,5,10,9,19,12,5])==4)
+print(poisonousPlants([20,5,6,15,2,2,17,2,11,5,14,5,10,9,19,12,5,1,0,10])==4)
 print(poisonousPlants([4,3,9,7,8,6,7,5,2])==4)
 print(poisonousPlants([4,3,9,7,8,2,7,5,1])==2)
 print(poisonousPlants([3,1,10,7,3,5,6,6])==3)
@@ -56,3 +42,16 @@ print(poisonousPlants([6,7,8,7,8,9,8,9,10,9,8])==3)
 print(poisonousPlants([0,0,0,0])==0)
 print(poisonousPlants([0,1,1,1])==3)
 print(poisonousPlants([0,1,1,0])==2)
+
+def testcase(i, expected_result):
+    fptr = open(f"Poisonous Plants-TestCase{i}.txt", 'r')
+    n = int(fptr.readline())
+    p = list(map(int, fptr.readline().rstrip().split()))
+    result = poisonousPlants(p)
+    if result == expected_result:
+        print(True)
+    else:
+        print(f"{result} != {expected_result}")
+    fptr.close()
+
+# testcase(12, 16)

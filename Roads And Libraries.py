@@ -4,30 +4,27 @@ def roadsAndLibraries(n, c_lib, c_road, cities):
     min_costs = 0
     for i in range(1,n+1):
         if not visited_array[i]:
-            roads = bfs(i, city_connection_map, visited_array)
+            roads = dfs(i, city_connection_map, visited_array,-1)
             if roads >= 0:
                 min_costs += min(roads*c_road+c_lib, (roads+1)*c_lib)
     return min_costs
 
-def bfs(city, city_connection_map, visited_array):
-    queue = []
-    queue.append(city)
-    roads = -1
-    while queue:
-        node = queue.pop(0)
-        if not visited_array[node]:
-            visited_array[node] = True
-            roads+=1
-            for dest_city in city_connection_map.get(node, []):
-                if not visited_array[dest_city]:
-                    queue.append(dest_city)
+def dfs(city, city_connection_map, visited_array, roads):
+    if not visited_array[city]:
+        visited_array[city] = True
+        roads+=1
+        for k,v in city_connection_map.items():
+            if k == city:
+                roads = max(roads, dfs(v, city_connection_map, visited_array, roads))
+            if v == city:
+                roads = max(roads, dfs(k, city_connection_map, visited_array, roads))
     return roads
 
 def create_city_connection_map(cities):
     city_connection_map = {}
     for connection in cities:
-        city_connection_map.setdefault(connection[0],[]).append(connection[1])
-        city_connection_map.setdefault(connection[1],[]).append(connection[0])
+        city_connection_map.setdefault(connection[0],connection[1])
+        city_connection_map.setdefault(connection[1],connection[0])
     return city_connection_map
 
 

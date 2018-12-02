@@ -19,7 +19,8 @@ def bfs(city, city_connection_map, visited_array):
             visited_array[node] = True
             roads+=1
             for dest_city in city_connection_map.get(node, []):
-                queue.append(dest_city)
+                if not visited_array[dest_city]:
+                    queue.append(dest_city)
     return roads
 
 def create_city_connection_map(cities):

@@ -6,7 +6,7 @@ class Solution:
         """
         result = []
         def backtracking(permutation_list=[], rest_list=nums):
-            if len(permutation_list) >= len(nums):
+            if len(rest_list) <= 0:
                 result.append(permutation_list)
                 return
             

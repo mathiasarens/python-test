@@ -7,37 +7,36 @@ class TreeNode:
 
 # 1 2 3 4 5 7 6 8 9 10
 class Solution:
+    def __init__(self):
+        self.left = None
+        self.middle = None
+        self.right = None
+        self.prev = None
+
     def recoverTree(self, root):
         """
         :type root: TreeNode
         :rtype: void Do not return anything, modify root in-place instead.
         """
-        class Pointer:
-            def __init__(self):
-                self.left = None
-                self.middle = None
-                self.right = None
-                self.prev = None
-        pointer = Pointer()
-        self.inorderTraversal(root, pointer)
-        if pointer.left and pointer.right:
-            self.swap(pointer.left, pointer.right)
-        elif pointer.left and pointer.middle:
-            self.swap(pointer.left, pointer.middle)
+        self.inorderTraversal(root)
+        if self.left and self.right:
+            self.swap(self.left, self.right)
+        elif self.left and self.middle:
+            self.swap(self.left, self.middle)
     
-    def inorderTraversal(self, node, pointer):
+    def inorderTraversal(self, node):
         if node.left:
-            self.inorderTraversal(node.left, pointer)
+            self.inorderTraversal(node.left)
         
-        if pointer.prev and pointer.prev.val >= node.val:
-            if not pointer.left:
-                pointer.left = pointer.prev
-                pointer.middle = node
-            elif not pointer.right:
-                pointer.right = node
-        pointer.prev = node   
+        if self.prev and self.prev.val >= node.val:
+            if not self.left:
+                self.left = self.prev
+                self.middle = node
+            elif not self.right:
+                self.right = node
+        self.prev = node   
         if node.right:
-            self.inorderTraversal(node.right, pointer)
+            self.inorderTraversal(node.right)
 
     def swap(self, a, b):
         tmp = a.val

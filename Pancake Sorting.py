@@ -47,7 +47,7 @@ print(solution.pancakeSort([1])==[])
 print(solution.pancakeSort([2,1])==[2])
 print(solution.pancakeSort([3,2,1])==[3])
 print(solution.pancakeSort([1,3,2])==[2,3,2])
-print(solution.pancakeSort([1, 2, 4, 3])== [3,4,3,2])
+print(solution.pancakeSort([1, 2, 4, 3]) == [3,4,3,2])
 
 132
 312
